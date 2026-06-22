@@ -1,0 +1,13 @@
+CC     += x86_64-w64-mingw32-gcc
+CFLAGS += -Iinc -I/usr/share/mingw-w64/include/ddk/
+CFLAGS += -Wno-int-to-pointer-cast
+
+LIBS = -lntoskrnl -lhal
+LFLAGS += -nostartfiles -nostdlib 
+LFLAGS += -Wl,--entry,cardinal_entry -Wl,--subsystem,native
+
+!compile  = |> $(CC) -o %o $(CFLAGS) -c %f |>
+!link 	  = |> $(CC) $(LFLAGS) -o %o %f $(LIBS) |>
+
+: foreach src/*.c |> !compile |> out/%B.o
+: out/*.o |> !link |> out/cardinal.sys
